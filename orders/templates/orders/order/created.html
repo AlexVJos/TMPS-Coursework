@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Order Successful - Sweet Dreams Bakery
+{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="display-4">Thank You!</h1>
+        <p class="lead">Your order #{{ order.id }} has been successfully placed.</p>
+        <p>We have received your order and will begin processing it shortly. You will receive an email confirmation soon.</p>
+        <hr>
+        <p>
+            Order Date: {{ order.created_at|date:"F j, Y, P" }} <br>
+            Total Amount: ${{ order.final_total_price|floatformat:2 }}
+            {% if order.applied_discount_info and order.applied_discount_info != "No discount applied." %}
+                <br><small class="text-success">({{ order.applied_discount_info }})</small>
+            {% endif %}
+        </p>
+        <p class="lead">
+            <a class="btn btn-primary btn-sm" href="{% url 'catalog:product_list' %}" role="button">Continue shopping</a>
+        </p>
+    </div>
+{% endblock %}

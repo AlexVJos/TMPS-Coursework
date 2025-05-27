@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if current_category %}{{ current_category.name }}{% else %}All Products{% endif %} - Sweet Dreams Bakery
+{% endblock %}
+
+{% block content %}
+    <div class="product-list">
+        <h1>{% if current_category %}{{ current_category.name }}{% else %}Our Delights{% endif %}</h1>
+        {% if current_category and current_category.description %}
+            <p class="lead">{{ current_category.description }}</p>
+        {% endif %}
+
+        {% if not products %}
+            <p>No products found in this category.</p>
+        {% else %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for product in products %}
+                    <div class="col">
+                        <div class="card shadow-sm product-card">
+                            <a href="{{ product.get_absolute_url }}">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="{% static 'img/no_image.png' %}" class="card-img-top"
+                                         alt="No image available">
+                                {% endif %}
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ product.get_absolute_url }}"
+                                       class="text-decoration-none text-dark">{{ product.name }}</a>
+                                </h5>
+                                <p class="card-text text-muted">{{ product.description|truncatewords:15 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <p class="fs-5 fw-bold mb-0">${{ product.price }}</p>
+                                    {% if product.available and product.stock > 0 %}
+                                        <form action="{% url 'cart:cart_add' product.id %}" method="post"
+                                              class="d-inline">
+                                            {% csrf_token %}
+                                            {# Скрытые поля для формы по умолчанию #}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="update_quantity" value="False">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Add to cart
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-muted">Out of stock</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

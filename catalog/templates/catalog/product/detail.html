@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ product.name }} - Sweet Dreams Bakery
+{% endblock %}
+
+{% block content %}
+    <div class="product-detail">
+        <div class="row">
+            <div class="col-md-6">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'img/no_image.png' %}" class="img-fluid rounded" alt="No image available">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <h1>{{ product.name }}</h1>
+                <h4><a href="{{ product.category.get_absolute_url }}" class="text-decoration-none">{{ product.category }}</a></h4>
+                <p class="lead mt-3">{{ product.description }}</p>
+                <hr>
+                <p class="fs-3 fw-bold">${{ product.price }}</p>
+
+                {% if product.stock > 0 and product.available %}
+                    <p class="text-success">In stock ({{ product.stock }} available)</p>
+                    <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group mb-3" style="max-width: 200px;">
+                            {{ cart_add_form.quantity }}
+                            {{ cart_add_form.update_quantity }}
+                            <button class="btn btn-primary" type="submit">Add to Cart</button>
+                        </div>
+                        {% if cart_add_form.quantity.errors %}
+                            <div class="alert alert-danger p-1">
+                                {% for error in cart_add_form.quantity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </form>
+                {% else %}
+                    <p class="text-danger">Out of stock</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

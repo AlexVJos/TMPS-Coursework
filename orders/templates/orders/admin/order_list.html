@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Admin: Order List{% endblock %}
+
+{% block content %}
+    <h1>Order Management</h1>
+    {% if orders %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Created</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.first_name }} {{ order.last_name }} ({{ order.email }})</td>
+                    <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>${{ order.final_total_price|floatformat:2 }}</td>
+                    <td><span class="badge bg-info text-dark">{{ order.get_status_display }}</span></td>
+                    <td>
+                        <a href="{% url 'orders:admin_order_detail' order.id %}" class="btn btn-sm btn-outline-primary">View/Manage</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+{% endblock %}

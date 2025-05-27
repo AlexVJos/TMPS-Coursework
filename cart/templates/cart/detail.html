@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Your Shopping Cart - Sweet Dreams Bakery
+{% endblock %}
+
+{% block content %}
+    <h1>Your Shopping Cart</h1>
+    {% if cart %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Unit Price</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    {% with product=item.product_obj %}
+                        <tr>
+                            <td>
+                                <a href="{{ product.get_absolute_url }}">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="height: 50px; width: auto;">
+                                    {% else %}
+                                        <img src="{% static 'img/no_image.png' %}" alt="No image" style="height: 50px; width: auto;">
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td><a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">{{ product.name }}</a></td>
+                            <td>
+                                <form action="{% url 'cart:cart_add' product.id %}" method="post" class="d-inline-flex align-items-center">
+                                    {{ item.update_quantity_form.quantity }}
+                                    {{ item.update_quantity_form.update_quantity }}
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Update</button>
+                                </form>
+                            </td>
+                            <td class="text-end">${{ item.price }}</td>
+                            <td class="text-end">${{ item.total_price }}</td>
+                            <td>
+                                <form action="{% url 'cart:cart_remove' product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
+                <tr class="table-info">
+                    <td colspan="4" class="text-end fw-bold">Total</td>
+                    <td colspan="2" class="text-end fw-bold num">${{ cart.get_total_price }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-end mt-3">
+            <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-secondary me-2">Continue Shopping</a>
+            <a href="{% url 'orders:order_create' %}" class="btn btn-primary">Proceed to Checkout</a>
+        </div>
+    {% else %}
+        <p>Your cart is empty.</p>
+        <p><a href="{% url 'catalog:product_list' %}" class="btn btn-primary">Continue Shopping</a></p>
+    {% endif %}
+{% endblock %}

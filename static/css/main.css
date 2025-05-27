@@ -1,0 +1,9 @@
+/* Your custom styles will go here */
+body {
+    font-family: 'Arial', sans-serif; /* Пример базового шрифта */
+}
+
+.product-card img {
+    max-height: 200px;
+    object-fit: cover;
+}
