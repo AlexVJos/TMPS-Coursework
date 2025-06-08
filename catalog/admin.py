@@ -4,15 +4,14 @@ from .models import Category, Product
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'parent_name']  # Добавил parent_name для наглядности
+    list_display = ['name', 'slug', 'parent_name']
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ['name']
 
     def parent_name(self, obj):
         return obj.parent.name if obj.parent else None
 
-    parent_name.short_description = 'Parent Category'  # Название колонки в админке
-
+    parent_name.short_description = 'Parent Category'
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -20,9 +19,9 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ['available', 'created_at', 'updated_at', 'category']
     list_editable = ['price', 'stock', 'available']
     prepopulated_fields = {'slug': ('name',)}
-    search_fields = ['name', 'category__name']  # Поиск также по имени категории
+    search_fields = ['name', 'category__name']
 
     def category_name(self, obj):
         return obj.category.name
 
-    category_name.short_description = 'Category'  # Название колонки
+    category_name.short_description = 'Category'

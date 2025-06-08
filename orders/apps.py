@@ -6,18 +6,15 @@ class OrdersConfig(AppConfig):
     name = 'orders'
 
     def ready(self):
-        # Импортируем здесь, чтобы избежать циклических зависимостей на уровне модуля
         from services.notification_service import (
             get_order_notifier,
             EmailNotificationObserver,
             AdminNotificationObserver,
-            InventoryAdjustmentObserver  # Новый наблюдатель
+            InventoryAdjustmentObserver
         )
 
         notifier = get_order_notifier()
 
-        # Проверяем, чтобы не дублировать при перезагрузке сервера разработки
-        # Это простая проверка, в сложных случаях может потребоваться более надежный механизм
         if not any(isinstance(obs, EmailNotificationObserver) for obs in notifier._observers):
             notifier.attach(EmailNotificationObserver())
         if not any(isinstance(obs, AdminNotificationObserver) for obs in notifier._observers):

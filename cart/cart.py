@@ -11,7 +11,6 @@ class Cart:
         self.session = request.session
         cart_data = self.session.get(settings.CART_SESSION_ID)
         if not cart_data:
-            # save an empty cart in the session
             cart_data = self.session[settings.CART_SESSION_ID] = {}
         self.cart_data = cart_data
 
@@ -28,13 +27,12 @@ class Cart:
         else:
             self.cart_data[product_id]['quantity'] += quantity
 
-        if self.cart_data[product_id]['quantity'] <= 0:  # Ensure quantity is positive
+        if self.cart_data[product_id]['quantity'] <= 0:
             self.remove(product)
         else:
             self.save()
 
     def save(self):
-        # mark the session as "modified" to make sure it gets saved
         self.session.modified = True
 
     def remove(self, product):
@@ -52,9 +50,8 @@ class Cart:
         from the database.
         """
         product_ids = self.cart_data.keys()
-        # get the product objects and add them to the cart
         products = Product.objects.filter(id__in=product_ids)
-        cart = self.cart_data.copy()  # Avoid modifying original dict while iterating
+        cart = self.cart_data.copy()
 
         for product in products:
             cart[str(product.id)]['product_obj'] = product
@@ -74,7 +71,6 @@ class Cart:
         return sum(Decimal(item['price']) * item['quantity'] for item in self.cart_data.values())
 
     def clear(self):
-        # remove cart from session
         del self.session[settings.CART_SESSION_ID]
         self.save()
 
@@ -85,8 +81,5 @@ class Cart:
         """
         product_id_str = str(product_id)
         if product_id_str in self.cart_data:
-            # To be consistent with __iter__, we should probably fetch the product object here too
-            # or ensure the caller handles this. For simplicity now, just returning the raw cart data.
-            # For a more robust solution, this might fetch the product and return a dict similar to __iter__
             return self.cart_data[product_id_str]
         return None

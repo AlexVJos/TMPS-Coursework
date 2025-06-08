@@ -3,11 +3,6 @@ from decimal import Decimal
 from typing import Optional
 
 
-# Предполагаем, что модели Order и Cart могут быть переданы для более сложных расчетов
-# from orders.models import Order # Циклическая зависимость, если Order использует это. Лучше передавать данные.
-# from cart.cart import Cart
-
-# --- Продукты (Стратегии скидок - без изменений) ---
 class DiscountStrategy(ABC):
     @abstractmethod
     def calculate_discount(self, order_total: Decimal,
@@ -55,7 +50,6 @@ class FixedAmountDiscountStrategy(DiscountStrategy):
         return self.description_template.format(amount=self.amount)
 
 
-# --- Создатели (Creators) с Фабричным Методом ---
 class DiscountAllocator(ABC):
     """
     Абстрактный Создатель. Он определяет операцию, которая использует фабричный метод
@@ -64,7 +58,6 @@ class DiscountAllocator(ABC):
 
     def get_discount_strategy(self, order_total: Decimal, cart_items: Optional[list] = None,
                               **kwargs) -> DiscountStrategy:
-        # Вызов фабричного метода для создания Продукта
         strategy = self._create_discount_strategy(order_total, cart_items, **kwargs)
         return strategy
 
@@ -104,8 +97,6 @@ class PromoCodeDiscountAllocator(DiscountAllocator):
         if not self.promo_code:
             return NoDiscountStrategy()
 
-        # Здесь могла бы быть логика загрузки промокодов из БД
-        # Для примера, жестко закодируем
         if self.promo_code == "BAKERYLOVE15":
             return PercentageDiscountStrategy(percentage=Decimal('15'),
                                               description_template="15% Off with Promo BAKERYLOVE15")
@@ -113,8 +104,4 @@ class PromoCodeDiscountAllocator(DiscountAllocator):
             return FixedAmountDiscountStrategy(amount=Decimal('5'), description_template="$5 Off with Promo FRESH5")
 
         print(f"Warning: Promo code '{self.promo_code}' not recognized.")
-        return NoDiscountStrategy()  # Или можно выбросить исключение
-
-# Для удобства можно оставить и простую фабрику на статических методах, если она нужна в других местах
-# или если создание аллокатора кажется избыточным для простого случая.
-# Но для демонстрации паттерна лучше использовать Creator-подход.
+        return NoDiscountStrategy()

@@ -12,12 +12,8 @@ class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['first_name', 'last_name', 'email', 'address', 'postal_code', 'city']
-        # Можно настроить виджеты, если нужно
-        # widgets = {
-        #     'address': forms.Textarea(attrs={'rows': 3}),
-        # }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'form-control mb-2'}) # Добавим Bootstrap классы
+            field.widget.attrs.update({'class': 'form-control mb-2'})

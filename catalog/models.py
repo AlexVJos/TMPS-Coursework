@@ -13,7 +13,6 @@ class Category(models.Model):
         related_name='children'
     )
     description = models.TextField(blank=True)
-    # image = models.ImageField(upload_to='categories/%Y/%m/%d', blank=True, null=True) # Опционально
 
     class Meta:
         ordering = ('name',)
@@ -21,7 +20,6 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
     def __str__(self):
-        # Для отображения иерархии в админке или при отладке
         full_path = [self.name]
         k = self.parent
         while k is not None:
@@ -56,7 +54,6 @@ class Product(models.Model):
 
     class Meta:
         ordering = ('name',)
-        # Индекс для одновременного поиска по id и slug, часто используется вместе
         index_together = (('id', 'slug'),)
 
     def __str__(self):
@@ -64,8 +61,6 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            # Генерируем уникальный slug, если он не предоставлен
-            # Простая генерация, для продакшена может потребоваться более надежная
             base_slug = slugify(self.name)
             slug = base_slug
             counter = 1

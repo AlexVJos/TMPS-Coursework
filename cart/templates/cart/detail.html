@@ -22,6 +22,7 @@
             <tbody>
                 {% for item in cart %}
                     {% with product=item.product_obj %}
+                        {% if item.product_obj %}
                         <tr>
                             <td>
                                 <a href="{{ product.get_absolute_url }}">
@@ -50,6 +51,7 @@
                                 </form>
                             </td>
                         </tr>
+                        {% endif %}
                     {% endwith %}
                 {% endfor %}
                 <tr class="table-info">
